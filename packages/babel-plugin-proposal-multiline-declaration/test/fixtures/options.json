@@ -1,0 +1,6 @@
+{
+  "plugins": [["proposal-multiline-declaration", { "proposal": "minimal" }]],
+  "parserOpts": {
+    "allowReturnOutsideFunction": true
+  }
+}
