@@ -1009,6 +1009,13 @@ export default class StatementParser extends ExpressionParser {
         decl.init = isFor
           ? this.parseMaybeAssignDisallowIn()
           : this.parseMaybeAssignAllowIn();
+      } else if (this.eat(tt.arrow)) {
+        this.parseMultilineDeclaration(node, [], false, false);
+        if (this.input.includes("bar")) debugger;
+        if (node.body && node.body.body[0].type === "ReturnStatement") {
+          console.log(node.body.body)
+          decl.init = node.body.body[0].argument;
+        }
       } else {
         if (
           kind === "const" &&

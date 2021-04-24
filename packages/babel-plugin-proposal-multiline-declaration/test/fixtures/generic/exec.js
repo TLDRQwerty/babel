@@ -1,4 +1,6 @@
-var foo = {
+// var bar = 'baz';
+
+var foo => {
 	return 'bar';
 };
 

@@ -1,17 +1,11 @@
 import { declare } from "@babel/helper-plugin-utils";
-import syntaxMultilineDeclaration from "@babel/plugin-syntax-mulitline-declaration";
-import minimalVisitor from "./minimalVisitor";
-
-const visitorsPerProposal = {
-  minimal: minimalVisitor,
-};
-
-export default declare((api, options) => {
+import syntaxMultilineDeclaration from "@babel/plugin-syntax-multiline-declaration";
+export default declare(api => {
   api.assertVersion(7);
 
   return {
-    name: "proposal-pipeline-operator",
+    name: "proposal-multiline-declaration",
     inherits: syntaxMultilineDeclaration,
-    visitor: visitorsPerProposal[options.proposal],
+    visitor: {},
   };
 });

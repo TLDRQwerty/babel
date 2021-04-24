@@ -2019,6 +2019,34 @@ export default class ExpressionParser extends LValParser {
     );
   }
 
+   parseMultilineDeclaration( 
+    node: N.ArrowFunctionExpression,
+    params: ?(N.Expression[]),
+    isAsync: boolean,
+    trailingCommaPos: ?number
+    ): any {
+    this.scope.enter(SCOPE_FUNCTION | SCOPE_ARROW);
+    let flags = functionFlags(isAsync, false);
+    // ConciseBody and AsyncConciseBody inherit [In]
+    if (!this.match(tt.bracketL) && this.prodParam.hasIn) {
+      flags |= PARAM_IN;
+    }
+    this.prodParam.enter(flags);
+    this.initFunction(node, isAsync);
+    const oldMaybeInArrowParameters = this.state.maybeInArrowParameters;
+
+    if (params) {
+      this.state.maybeInArrowParameters = true;
+      this.setArrowFunctionParameters(node, params, trailingCommaPos);
+    }
+    this.state.maybeInArrowParameters = false;
+    const left = this.parseFunctionBody(node, true);
+
+    this.prodParam.exit();
+    this.scope.exit();
+    this.state.maybeInArrowParameters = oldMaybeInArrowParameters;
+  }
+
   // Parse arrow function expression.
   // If the parameters are provided, they will be converted to an
   // assignable list.

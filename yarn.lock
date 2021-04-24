@@ -1190,6 +1190,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@babel/plugin-proposal-multiline-declaration@workspace:packages/babel-plugin-proposal-multiline-declaration":
+  version: 0.0.0-use.local
+  resolution: "@babel/plugin-proposal-multiline-declaration@workspace:packages/babel-plugin-proposal-multiline-declaration"
+  dependencies:
+    "@babel/core": "workspace:*"
+    "@babel/helper-plugin-test-runner": "workspace:*"
+    "@babel/helper-plugin-utils": "workspace:^7.12.13"
+    "@babel/plugin-syntax-multiline-declaration": "workspace:^1.0.0"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  languageName: unknown
+  linkType: soft
+
 "@babel/plugin-proposal-nullish-coalescing-operator@npm:^7.12.0":
   version: 7.12.0
   resolution: "@babel/plugin-proposal-nullish-coalescing-operator@npm:7.12.0"
@@ -1643,6 +1656,17 @@ __metadata:
 "@babel/plugin-syntax-module-string-names@workspace:packages/babel-plugin-syntax-module-string-names":
   version: 0.0.0-use.local
   resolution: "@babel/plugin-syntax-module-string-names@workspace:packages/babel-plugin-syntax-module-string-names"
+  dependencies:
+    "@babel/core": "workspace:*"
+    "@babel/helper-plugin-utils": "workspace:^7.12.13"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  languageName: unknown
+  linkType: soft
+
+"@babel/plugin-syntax-multiline-declaration@workspace:^1.0.0, @babel/plugin-syntax-multiline-declaration@workspace:packages/babel-plugin-syntax-multiline-declaration":
+  version: 0.0.0-use.local
+  resolution: "@babel/plugin-syntax-multiline-declaration@workspace:packages/babel-plugin-syntax-multiline-declaration"
   dependencies:
     "@babel/core": "workspace:*"
     "@babel/helper-plugin-utils": "workspace:^7.12.13"
