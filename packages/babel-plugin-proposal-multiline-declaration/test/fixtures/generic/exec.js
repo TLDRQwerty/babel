@@ -1,7 +1,5 @@
-// var bar = 'baz';
-
 var foo => {
-	return 'bar';
+    return 'bar';
 };
 
 expect(foo).toBe('bar');

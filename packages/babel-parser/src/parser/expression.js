@@ -127,9 +127,16 @@ export default class ExpressionParser extends LValParser {
     }
   }
 
-  shouldExitDescending(expr: N.Expression, potentialArrowAt: number): boolean {
+  shouldExitDescending(
+    expr: N.Expression,
+    potentialArrowAt: number,
+    potentialMultilineDeclarationAt: number,
+  ): boolean {
     return (
-      expr.type === "ArrowFunctionExpression" && expr.start === potentialArrowAt
+      (expr.type === "ArrowFunctionExpression" &&
+        expr.start === potentialArrowAt) ||
+      (expr.type === "ArrowFunctionExpression" &&
+        expr.start === potentialMultilineDeclarationAt)
     );
   }
 
@@ -262,6 +269,10 @@ export default class ExpressionParser extends LValParser {
       ownExpressionErrors = true;
     }
 
+    if (this.match(tt.arrow)) {
+      this.state.potentialMultilineDeclarationAt = this.state.start;
+    }
+
     if (this.match(tt.parenL) || this.match(tt.name)) {
       this.state.potentialArrowAt = this.state.start;
     }
@@ -311,9 +322,17 @@ export default class ExpressionParser extends LValParser {
     const startPos = this.state.start;
     const startLoc = this.state.startLoc;
     const potentialArrowAt = this.state.potentialArrowAt;
+    const potentialMultilineDeclarationAt = this.state
+      .potentialMultilineDeclarationAt;
     const expr = this.parseExprOps(refExpressionErrors);
 
-    if (this.shouldExitDescending(expr, potentialArrowAt)) {
+    if (
+      this.shouldExitDescending(
+        expr,
+        potentialArrowAt,
+        potentialMultilineDeclarationAt,
+      )
+    ) {
       return expr;
     }
 
@@ -346,9 +365,17 @@ export default class ExpressionParser extends LValParser {
     const startPos = this.state.start;
     const startLoc = this.state.startLoc;
     const potentialArrowAt = this.state.potentialArrowAt;
+    const potentialMultilineDeclarationAt = this.state
+      .potentialMultilineDeclarationAt;
     const expr = this.parseMaybeUnary(refExpressionErrors);
 
-    if (this.shouldExitDescending(expr, potentialArrowAt)) {
+    if (
+      this.shouldExitDescending(
+        expr,
+        potentialArrowAt,
+        potentialMultilineDeclarationAt,
+      )
+    ) {
       return expr;
     }
 
@@ -585,9 +612,17 @@ export default class ExpressionParser extends LValParser {
     const startPos = this.state.start;
     const startLoc = this.state.startLoc;
     const potentialArrowAt = this.state.potentialArrowAt;
+    const potentialMultilineDeclarationAt = this.state
+      .potentialMultilineDeclarationAt;
     const expr = this.parseExprAtom(refExpressionErrors);
 
-    if (this.shouldExitDescending(expr, potentialArrowAt)) {
+    if (
+      this.shouldExitDescending(
+        expr,
+        potentialArrowAt,
+        potentialMultilineDeclarationAt,
+      )
+    ) {
       return expr;
     }
 
@@ -951,11 +986,14 @@ export default class ExpressionParser extends LValParser {
   // AsyncArrowFunction
 
   parseExprAtom(refExpressionErrors?: ?ExpressionErrors): N.Expression {
+    // if (this.input.includes("bar")) debugger;
     // If a division operator appears in an expression position, the
     // tokenizer got confused, and we force it to read a regexp instead.
     if (this.state.type === tt.slash) this.readRegexp();
 
     const canBeArrow = this.state.potentialArrowAt === this.state.start;
+    const canBeMultilineExpression =
+      this.state.potentialMultilineDeclarationAt === this.state.start;
     let node;
 
     switch (this.state.type) {
@@ -1082,6 +1120,15 @@ export default class ExpressionParser extends LValParser {
           /* isRecord */ true,
           refExpressionErrors,
         );
+      }
+      case tt.arrow: {
+        if (canBeMultilineExpression) {
+          const arrowNode = this.parseArrow(
+            this.startNodeAt(this.state.start, this.state.startLoc),
+          );
+          return this.parseMultilineDeclaration(arrowNode);
+        }
+        break;
       }
       case tt.braceL: {
         return this.parseObjectLike(
@@ -2019,32 +2066,27 @@ export default class ExpressionParser extends LValParser {
     );
   }
 
-   parseMultilineDeclaration( 
-    node: N.ArrowFunctionExpression,
-    params: ?(N.Expression[]),
-    isAsync: boolean,
-    trailingCommaPos: ?number
-    ): any {
+  parseMultilineDeclaration(node: any) {
+    if (this.input.includes("bar")) debugger;
     this.scope.enter(SCOPE_FUNCTION | SCOPE_ARROW);
-    let flags = functionFlags(isAsync, false);
+    let flags = functionFlags(false, false);
     // ConciseBody and AsyncConciseBody inherit [In]
     if (!this.match(tt.bracketL) && this.prodParam.hasIn) {
       flags |= PARAM_IN;
     }
     this.prodParam.enter(flags);
-    this.initFunction(node, isAsync);
-    const oldMaybeInArrowParameters = this.state.maybeInArrowParameters;
+    this.initFunction(node, false);
 
-    if (params) {
-      this.state.maybeInArrowParameters = true;
-      this.setArrowFunctionParameters(node, params, trailingCommaPos);
-    }
-    this.state.maybeInArrowParameters = false;
-    const left = this.parseFunctionBody(node, true);
+    node.body = this.parseBlock(false, false);
 
     this.prodParam.exit();
     this.scope.exit();
-    this.state.maybeInArrowParameters = oldMaybeInArrowParameters;
+    const base = this.finishNode(node, "ArrowFunctionExpression");
+    base.params = [];
+    node = this.startNodeAt(this.state.startPos, this.state.startLoc);
+    node.callee = base;
+    node.arguments = [];
+    return this.finishCallExpression(node, false);
   }
 
   // Parse arrow function expression.

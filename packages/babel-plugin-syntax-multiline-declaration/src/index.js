@@ -18,7 +18,7 @@ export default declare((api, { proposal }) => {
     name: "syntax-multiline-declaration",
 
     manipulateOptions(opts, parserOpts) {
-      parserOpts.plugins.push(["multilineDelcaration", { proposal }]);
+      parserOpts.plugins.push(["multilineDeclaration", { proposal }]);
     },
   };
 });

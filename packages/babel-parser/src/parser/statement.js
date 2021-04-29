@@ -1001,21 +1001,18 @@ export default class StatementParser extends ExpressionParser {
   ): N.VariableDeclaration {
     const declarations = (node.declarations = []);
     const isTypescript = this.hasPlugin("typescript");
+    const maybeMultilineDeclaration = this.hasPlugin("multilineDeclaration");
     node.kind = kind;
     for (;;) {
       const decl = this.startNode();
       this.parseVarId(decl, kind);
-      if (this.eat(tt.eq)) {
+      if (
+        this.eat(tt.eq) ||
+        (maybeMultilineDeclaration && this.match(tt.arrow))
+      ) {
         decl.init = isFor
           ? this.parseMaybeAssignDisallowIn()
           : this.parseMaybeAssignAllowIn();
-      } else if (this.eat(tt.arrow)) {
-        this.parseMultilineDeclaration(node, [], false, false);
-        if (this.input.includes("bar")) debugger;
-        if (node.body && node.body.body[0].type === "ReturnStatement") {
-          console.log(node.body.body)
-          decl.init = node.body.body[0].argument;
-        }
       } else {
         if (
           kind === "const" &&

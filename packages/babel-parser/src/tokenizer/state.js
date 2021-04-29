@@ -22,6 +22,8 @@ type TopicContextState = {
 };
 
 export default class State {
+  potentialMultilineDeclarationAt: number;
+
   strict: boolean;
   curLine: number;
 
