@@ -2066,7 +2066,7 @@ export default class ExpressionParser extends LValParser {
     );
   }
 
-  parseMultilineDeclaration(node: any) {
+  parseMultilineDeclaration(node: N.ArrowFunctionExpression) {
     if (this.input.includes("bar")) debugger;
     this.scope.enter(SCOPE_FUNCTION | SCOPE_ARROW);
     let flags = functionFlags(false, false);
