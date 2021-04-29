@@ -986,7 +986,6 @@ export default class ExpressionParser extends LValParser {
   // AsyncArrowFunction
 
   parseExprAtom(refExpressionErrors?: ?ExpressionErrors): N.Expression {
-    // if (this.input.includes("bar")) debugger;
     // If a division operator appears in an expression position, the
     // tokenizer got confused, and we force it to read a regexp instead.
     if (this.state.type === tt.slash) this.readRegexp();
@@ -2067,7 +2066,6 @@ export default class ExpressionParser extends LValParser {
   }
 
   parseMultilineDeclaration(node: N.ArrowFunctionExpression) {
-    if (this.input.includes("bar")) debugger;
     this.scope.enter(SCOPE_FUNCTION | SCOPE_ARROW);
     let flags = functionFlags(false, false);
     // ConciseBody and AsyncConciseBody inherit [In]
