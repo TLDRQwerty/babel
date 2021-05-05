@@ -1125,7 +1125,9 @@ export default class ExpressionParser extends LValParser {
           const arrowNode = this.parseArrow(
             this.startNodeAt(this.state.start, this.state.startLoc),
           );
-          return this.parseMultilineDeclaration(arrowNode);
+          if (arrowNode) {
+            return this.parseMultilineDeclaration(arrowNode);
+          }
         }
         break;
       }
