@@ -2083,7 +2083,7 @@ export default class ExpressionParser extends LValParser {
     this.scope.exit();
     const base = this.finishNode(node, "ArrowFunctionExpression");
     base.params = [];
-    node = this.startNodeAt(this.state.startPos, this.state.startLoc);
+    node = this.startNodeAt(this.state.start, this.state.startLoc);
     node.callee = base;
     node.arguments = [];
     return this.finishCallExpression(node, false);
