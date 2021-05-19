@@ -2,4 +2,4 @@ var foo => async {
   return 'bar';
 };
 
-expect(foo).toBe('bar');
+expect(foo).resolves.toBe('bar');

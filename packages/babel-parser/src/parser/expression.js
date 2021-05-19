@@ -2067,7 +2067,15 @@ export default class ExpressionParser extends LValParser {
     );
   }
 
-  parseMultilineDeclaration(node: N.ArrowFunctionExpression) {
+   parseMultilineDeclaration(node: N.ArrowFunctionExpression) {
+     let isAsync = false;
+    if (this.state.type === tt.name) {
+      const id = this.parseIdentifier();
+      if (id.name === 'async') {
+        isAsync = true;
+      }
+    }
+
     this.scope.enter(SCOPE_FUNCTION | SCOPE_ARROW);
     let flags = functionFlags(false, false);
     // ConciseBody and AsyncConciseBody inherit [In]
@@ -2078,6 +2086,7 @@ export default class ExpressionParser extends LValParser {
     this.initFunction(node, false);
 
     node.body = this.parseBlock(false, false);
+    node.async = isAsync;
 
     this.prodParam.exit();
     this.scope.exit();
